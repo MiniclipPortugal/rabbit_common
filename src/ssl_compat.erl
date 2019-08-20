@@ -38,13 +38,13 @@
 
 connection_information(SslSocket) ->
     code_version:update(?MODULE),
-    ssl_compat:connection_information(SslSocket).
+    compat_connection_information(SslSocket).
 
 connection_information_post_18(SslSocket) ->
-    ssl:connection_information(SslSocket).
+    compat_connection_information(SslSocket).
 
 connection_information_pre_18(SslSocket) ->
-    case ssl:connection_info(SslSocket) of
+    case compat_connection_information(SslSocket) of
         {ok, {ProtocolVersion, CipherSuite}} ->
             {ok, [{protocol, ProtocolVersion},
                   {cipher_suite, CipherSuite}]};
@@ -64,7 +64,7 @@ connection_information_pre_18(SslSocket, Items) ->
     WantCipherSuite = lists:member(cipher_suite, Items),
     if
         WantProtocolVersion orelse WantCipherSuite ->
-            case ssl:connection_info(SslSocket) of
+            case compat_connection_information(SslSocket) of
                 {ok, {ProtocolVersion, CipherSuite}} ->
                     filter_information_items(ProtocolVersion,
                                              CipherSuite,
@@ -90,3 +90,12 @@ filter_information_items(ProtocolVersion, CipherSuite, [_ | Rest],
     filter_information_items(ProtocolVersion, CipherSuite, Rest, Result);
 filter_information_items(_ProtocolVersion, _CipherSuite, [], Result) ->
     {ok, lists:reverse(Result)}.
+
+
+-ifdef(post19).
+compat_connection_information(SslSocket) ->
+    ssl:connection_information(SslSocket).
+-else.
+compat_connection_information(SslSocket) ->
+    ssl:connection_info(SslSocket).
+-endif.
