@@ -357,7 +357,7 @@ assert_args_equivalence1(Orig, New, Name, Key) ->
             assert_field_equivalence(OrigTypeVal, NewTypeVal, Name, Key)
     end.
 
-assert_field_equivalence(_Orig, _Orig, _Name, _Key) ->
+assert_field_equivalence(Orig, Orig, _Name, _Key) ->
     ok;
 assert_field_equivalence(Orig, New, Name, Key) ->
     equivalence_fail(Orig, New, Name, Key).
@@ -909,7 +909,7 @@ pget_or_die(K, P) ->
         V         -> V
     end.
 
-%% property merge 
+%% property merge
 pmerge(Key, Val, List) ->
       case proplists:is_defined(Key, List) of
               true -> List;
@@ -919,9 +919,9 @@ pmerge(Key, Val, List) ->
 %% proplists merge
 plmerge(P1, P2) ->
     dict:to_list(dict:merge(fun(_, V, _) ->
-                                V 
-                            end, 
-                            dict:from_list(P1), 
+                                V
+                            end,
+                            dict:from_list(P1),
                             dict:from_list(P2))).
 
 pset(Key, Value, List) -> [{Key, Value} | proplists:delete(Key, List)].
@@ -1166,7 +1166,7 @@ moving_average(Time,  HalfLife,  Next, Current) ->
 random(N) ->
     case get(random_seed) of
         undefined ->
-            rand:seed(exsplus, 
+            rand:seed(exsplus,
                         {erlang:phash2([node()]),
                          time_compat:monotonic_time(),
                          time_compat:unique_integer()});
